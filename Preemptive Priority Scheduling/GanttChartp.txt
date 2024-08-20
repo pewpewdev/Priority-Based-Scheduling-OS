@@ -1,0 +1,175 @@
+package Pinput.org;
+
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Arrays;
+
+public class GanttChartp extends Pinput {
+    private JFrame frame;
+    private JPanel panel;
+    private JLabel[] labels;
+    private Color[] colors;
+    private double[] completionTime; // Declare completionTime as an instance variable
+    private double[] startingPoint; // Declare startingPoint as an instance variable
+    private int[] executedProcess; // Declare executedProcess as an instance variable
+
+    public void createGanttChart() {
+        frame = new JFrame("Gantt Chart");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        panel = new JPanel(new GridLayout(1, n));
+        labels = new JLabel[n];
+        colors = new Color[]{Color.RED, Color.GREEN, Color.BLUE, Color.YELLOW, Color.ORANGE, Color.CYAN, Color.MAGENTA};
+
+        for (int i = 0; i < n; i++) {
+            labels[i] = new JLabel("P" + (i + 1));
+            labels[i].setOpaque(true);
+            labels[i].setBackground(colors[i % colors.length]);
+            labels[i].setHorizontalAlignment(JLabel.CENTER);
+            panel.add(labels[i]);
+        }
+
+        frame.add(panel, BorderLayout.CENTER);
+
+        JButton startButton = new JButton("Start Scheduling");
+        startButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                executePriorityScheduling();
+                printGanttChart();
+            }
+        });
+
+        frame.add(startButton, BorderLayout.SOUTH);
+        frame.pack();
+        frame.setVisible(true);
+    }
+
+    private void executePriorityScheduling() {
+        // Create copies of p and bt arrays
+        double[] pCopy = Arrays.copyOf(p, n);
+        double[] btCopy = Arrays.copyOf(bt, n);
+
+        // Sort the processes based on arrival time
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                if (at[i] > at[j]) {
+                    double temp = at[i];
+                    at[i] = at[j];
+                    at[j] = temp;
+
+                    temp = bt[i];
+                    bt[i] = bt[j];
+                    bt[j] = temp;
+
+                    temp = pp[i];
+                    pp[i] = pp[j];
+                    pp[j] = temp;
+
+                    temp = p[i];
+                    p[i] = p[j];
+                    p[j] = temp;
+                }
+            }
+        }
+
+        // Create the startingPoint array and initialize it with the arrival time of the first process
+        startingPoint = new double[n];
+        startingPoint[0] = at[0];
+
+        // Create the executedProcess array
+        executedProcess = new int[n];
+
+        completionTime = new double[n]; // Initialize completionTime array
+
+        int completedProcesses = 0;
+        double currentTime = startingPoint[0];
+        int currentProcess = -1;
+
+        // Loop until all processes are completed
+        while (completedProcesses < n) {
+            double highestPriority = Integer.MAX_VALUE;
+
+            // Find the process with the highest priority among the remaining processes
+            for (int i = 0; i < n; i++) {
+                if (btCopy[i] > 0 && pp[i] < highestPriority && at[i] <= currentTime) {
+                    highestPriority = pp[i];
+                    currentProcess = i;
+                }
+            }
+
+            // If a process is found with higher priority or no process is executing currently
+            if (currentProcess != -1) {
+                // Execute the process until its burst time becomes zero or a higher priority process arrives
+                while (btCopy[currentProcess] > 0) {
+                    btCopy[currentProcess]--;
+                    currentTime++;
+
+                    // Check if a higher priority process arrives
+                    for (int i = 0; i < n; i++) {
+                        if (btCopy[i] > 0 && pp[i] < pp[currentProcess] && at[i] <= currentTime) {
+                            // Update the executed process array, starting time, and current process
+                            executedProcess[completedProcesses] = (int) p[i];
+                            startingPoint[completedProcesses] = at[i];
+                            currentProcess = i;
+                            break;
+                        }
+                    }
+
+                    // If the current process is completed, update the completion time and increment the completedProcesses count
+                    if (btCopy[currentProcess] == 0) {
+                        completedProcesses++;
+                        completionTime[currentProcess] = currentTime;
+                        break;
+                    }
+                }
+            } else {
+                currentTime++;
+            }
+        }
+    }
+
+    private void printGanttChart() {
+        // Calculate the maximum completion time
+        double maxCompletionTime = 0;
+        for (int i = 0; i < n; i++) {
+            if (completionTime[i] > maxCompletionTime) {
+                maxCompletionTime = completionTime[i];
+            }
+        }
+
+        // Calculate the scaling factor for the bar chart height
+        int barHeight = 5;
+        double scaleFactor = barHeight / maxCompletionTime;
+
+        // Calculate the maximum bar width
+        int maxBarWidth = 50;
+
+        // Print the Gantt chart as a bar chart
+        System.out.println("Gantt Chart:");
+        for (int i = 0; i < n; i++) {
+            double barWidth = completionTime[i] - startingPoint[i];
+            int scaledBarWidth = (int) (barWidth * scaleFactor);
+
+            System.out.print("P" + executedProcess[i] + " |");
+            for (int j = 0; j < scaledBarWidth; j++) {
+                System.out.print("-");
+            }
+            System.out.println();
+
+            // Add space between bars
+            for (int j = 0; j < maxBarWidth - scaledBarWidth; j++) {
+                System.out.print(" ");
+            }
+        }
+    }
+
+    public static void main(String[] args) {
+        GanttChartp ganttChart = new GanttChartp();
+        ganttChart.PInput1();
+        ganttChart.display();
+        ganttChart.createGanttChart();
+    }
+}

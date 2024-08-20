@@ -1,0 +1,44 @@
+package Pinput.org;
+import java.util.Scanner;
+
+	public class Pinput {
+	    private Scanner scanner = new Scanner(System.in);
+	    protected int n;
+	    protected double[] p,y;
+	    protected double[] pp, bt,at, wt, tt, ct;
+	    protected int exeutepriority, count = 0,pt;
+	    protected double avg = 0, ttavg = 0, time, end;
+	    
+	    public void PInput1() {
+	        System.out.print("Enter the number of processes: ");
+	        n = scanner.nextInt();
+	        System.out.println("Enter the priority type. \n Choice =0:high as high\\n Choice =1:low as high");
+	        pt= scanner.nextInt();
+	        p = new double[n];
+	        pp = new double[n];
+	        bt = new double[n];
+	        at = new double[n];
+	        wt = new double[n];
+	        tt = new double[n];
+	        ct = new double[n];
+	        y = new double[n];
+
+	        System.out.println("\n\tEnter burst time, time priorities, and arrival time for each process:\n");
+
+	        for (int i = 0; i < n; i++) {
+	            System.out.print("\nProcess " + (i + 1) + ": ");
+	            bt[i] = scanner.nextDouble();
+	            pp[i] = scanner.nextDouble();
+	            at[i] = scanner.nextDouble();
+	            p[i] = i + 1;
+	        }
+	    }
+
+	    public void display() {
+	        for (int i = 0; i < n; i++) {
+	            System.out.println(
+	                    "Process[" + (i + 1) + "]: BT=" + bt[i] + ", PP=" + pp[i] + ", AT=" + at[i]);
+	        }
+	    }
+	    
+	}

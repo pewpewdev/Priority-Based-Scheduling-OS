@@ -1,0 +1,146 @@
+import java.util.Scanner;
+
+public class PriorityScheduling {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.print("Enter the number of processes: ");
+        int n = scanner.nextInt();
+
+        int[] arrivalTime = new int[n];
+        int[] burstTime = new int[n];
+        int[] priority = new int[n];
+
+        for (int i = 0; i < n; i++) {
+            System.out.println("Enter details for process " + (i + 1) + ":");
+            System.out.print("Arrival Time: ");
+            arrivalTime[i] = scanner.nextInt();
+            System.out.print("Burst Time: ");
+            burstTime[i] = scanner.nextInt();
+            System.out.print("Priority: ");
+            priority[i] = scanner.nextInt();
+        }
+
+        int CPU = 0;
+        int allTime = 0;
+
+        int[] ATt = new int[n];
+        int NoP = n;
+        int[] PPt = new int[n];
+        int[] waitingTime = new int[n];
+        int[] turnaroundTime = new int[n];
+
+        for (int i = 0; i < n; i++) {
+            PPt[i] = priority[i];
+            ATt[i] = arrivalTime[i];
+        }
+
+        int LAT = 0;
+        for (int i = 0; i < n; i++) {
+            if (arrivalTime[i] > LAT)
+                LAT = arrivalTime[i];
+        }
+
+        int MAX_P = 0;
+        for (int i = 0; i < n; i++) {
+            if (PPt[i] > MAX_P)
+                MAX_P = PPt[i];
+        }
+
+        int ATi = 0;
+        int P1 = PPt[0];
+        int P2 = PPt[0];
+
+        int j = -1;
+        while (NoP > 0 && CPU <= 1000) {
+            for (int i = 0; i < n; i++) {
+                if ((ATt[i] <= CPU) && (ATt[i] != (LAT + 10))) {
+                    if (PPt[i] != (MAX_P + 1)) {
+                        P2 = PPt[i];
+                        j = 1;
+
+                        if (P2 < P1) {
+                            j = 1;
+                            ATi = i;
+                            P1 = PPt[i];
+                            P2 = PPt[i];
+                        }
+                    }
+                }
+            }
+
+            if (j == -1) {
+                CPU = CPU + 1;
+                continue;
+            } else {
+                waitingTime[ATi] = CPU - ATt[ATi];
+                CPU = CPU + burstTime[ATi];
+                turnaroundTime[ATi] = CPU - ATt[ATi];
+                ATt[ATi] = LAT + 10;
+                j = -1;
+                PPt[ATi] = MAX_P + 1;
+                ATi = 0;
+                P1 = MAX_P + 1;
+                P2 = MAX_P + 1;
+                NoP = NoP - 1;
+            }
+        }
+
+        System.out.println("\nProcess_Number\tBurst_Time\tPriority\tArrival_Time\tWaiting_Time\tTurnaround_Time\n\n");
+        for (int i = 0; i < n; i++) {
+            System.out.println("P" + (i + 1) + "\t\t" + burstTime[i] + "\t\t" + priority[i] + "\t\t" + arrivalTime[i] + "\t\t" + waitingTime[i] + "\t\t" + turnaroundTime[i]);
+        }
+
+        float avgWT = 0;
+        float avgTAT = 0;
+        for (int i = 0; i < n; i++) {
+            avgWT = waitingTime[i] + avgWT;
+            avgTAT = turnaroundTime[i] + avgTAT;
+        }
+
+        System.out.println("Average waiting time = " + (avgWT / n));
+        System.out.println("Average turnaround time = " + (avgTAT / n));
+
+        System.out.println("\nGantt Chart:");
+        System.out.print(" ");
+        for (int i = 0; i < n; i++) {
+            for (int k = 0; k < burstTime[i]; k++) {
+                System.out.print("--");
+            }
+            System.out.print(" ");
+        }
+        System.out.println();
+        System.out.print("|");
+        for (int i = 0; i < n; i++) {
+            for (int k = 0; k < burstTime[i] - 1; k++) {
+                System.out.print(" ");
+            }
+            System.out.print("P" + (i + 1));
+            for (int k = 0; k < burstTime[i] - 1; k++) {
+                System.out.print(" ");
+            }
+            System.out.print("|");
+        }
+        System.out.println();
+        System.out.print(" ");
+        for (int i = 0; i < n; i++) {
+            for (int k = 0; k < burstTime[i]; k++) {
+                System.out.print("--");
+            }
+            System.out.print(" ");
+        }
+        System.out.println();
+        System.out.print("0");
+        for (int i = 0; i < n; i++) {
+            for (int k = 0; k < burstTime[i]; k++) {
+                System.out.print("  ");
+            }
+            if (turnaroundTime[i] > 9)
+                System.out.print("\b");
+            System.out.print(turnaroundTime[i]);
+        }
+        System.out.println();
+
+        scanner.close();
+    }
+}

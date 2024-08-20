@@ -1,0 +1,16 @@
+INSTALLATION:
+
+- FOR PREMPTIVE PRIORITY SCHEDULING :
+ DOWNLOAD 4 FILES with class 
+1) pinput
+2)TAT
+3)WT
+4)GANTTCHART
+
+-FOR NON PREMPTIVE PRIORITY SCHEDULING :
+DOWNLOAD FILE NAME PriorityScheduling.
+
+
+- to run gantt chart 
+install swing 
+

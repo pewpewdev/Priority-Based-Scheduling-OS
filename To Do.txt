@@ -1,0 +1,5 @@
+Non-premptive priority scheduling:-Implementing oops concepts in non-preemptive priority scheduling.
+
+Effective implementation of gantt chart for preemptive and non-preemptive for any input/processes with any arrival time,burst time and priority and in any order.
+
+Implementation of priority scheduling in real life applications EX:Ticket confirmation based on the priority of age and gender

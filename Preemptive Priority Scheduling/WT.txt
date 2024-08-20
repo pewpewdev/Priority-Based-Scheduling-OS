@@ -1,0 +1,52 @@
+class WT extends TAT{
+	    double[] waitingTime;
+	    double[] turnaroundTime;
+	    double[] completionTime;
+	    double avgWaitingTime;
+	    double avgTurnaroundTime;
+
+	    public void calculateWT() {
+	        waitingTime = new double[n];
+	        turnaroundTime = new double[n];
+	        completionTime = new double[n];
+
+	        double avg = 0, tt = 0;
+	        double[] x = getX(); // Accessing x array from TAT class
+
+	        for (int i = 0; i < n; i++) {
+	            turnaroundTime[i] = completionTime[i] = 0; // Initialize turnaroundTime and completionTime to 0
+
+	            completionTime[i] = ct[i]; // Using the completion time from TAT class
+	            waitingTime[i] = completionTime[i] - at[i] - x[i];
+	            turnaroundTime[i] = completionTime[i] - at[i];
+
+	            avg += waitingTime[i];
+	            tt += turnaroundTime[i];
+	        }
+
+	        avgWaitingTime = avg / n;
+	        avgTurnaroundTime = tt / n;
+	    }
+
+	    public void displayResults() {
+
+			System.out.println("Process\tburst-time\tarrival-time\twaiting-time\tturnaround-time\tcompletion-time\tPriority");
+	        for (int i = 0; i < n; i++) {
+	            System.out.println(
+	                    "p" + (i + 1) + "\t\t" + x[i] + "\t\t" + at[i] + "\t\t" + waitingTime[i] + "\t\t" +
+	                            turnaroundTime[i] + "\t\t" + completionTime[i] + "\t\t" + pp[i]);
+	        }
+	        System.out.println("\nAverage waiting time = " + avgWaitingTime);
+	        		System.out.println("Average turnaround time = " + avgTurnaroundTime);
+	    }
+
+	    public static void main(String[] args) {
+	        WT wt = new WT();
+	        wt.PInput1();
+	        wt.display();
+	        wt.tat();
+	        wt.calculateWT();
+	        wt.displayResults();
+	       
+	    }
+	}
